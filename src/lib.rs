@@ -1,15 +1,15 @@
 extern crate futures;
 use futures::stream::{self, Stream};
 
-pub fn select_all<I, T, E>(streams: I) -> Box<Stream<Item = T, Error = E>>
+pub fn select_all<I, T, E>(streams: I) -> Box<Stream<Item = T, Error = E> + Send>
     where I: IntoIterator,
-          I::Item: Stream<Item = T, Error = E> + 'static,
-          T: 'static,
-          E: 'static,
+          I::Item: Stream<Item = T, Error = E> + Send + 'static,
+          T: 'static + Send,
+          E: 'static + Send,
 {
     struct Level<T, E> {
         power: usize,
-        stream: Box<Stream<Item = T, Error = E>>,
+        stream: Box<Stream<Item = T, Error = E> + Send>,
     }
 
     let mut stack: Vec<Level<T, E>> = Vec::new();
@@ -43,9 +43,9 @@ mod tests {
 
     #[test]
     fn happy_path() {
-        let stream_a = stream::iter(vec![Ok(0), Ok(1)]);
-        let stream_b = stream::iter(vec![Ok(2), Ok(3), Ok(4)]);
-        let stream_c = stream::iter(vec![Ok(5)]);
+        let stream_a = stream::iter_result(vec![Ok(0), Ok(1)]);
+        let stream_b = stream::iter_result(vec![Ok(2), Ok(3), Ok(4)]);
+        let stream_c = stream::iter_result(vec![Ok(5)]);
 
         let mut values = select_all::<_, _, ()>(vec![stream_a, stream_b, stream_c])
             .collect()
@@ -57,9 +57,9 @@ mod tests {
 
     #[test]
     fn an_error() {
-        let stream_a = stream::iter(vec![Ok(0), Ok(1)]);
-        let stream_b = stream::iter(vec![Ok(2), Err("fail"), Ok(4)]);
-        let stream_c = stream::iter(vec![Ok(5)]);
+        let stream_a = stream::iter_result(vec![Ok(0), Ok(1)]);
+        let stream_b = stream::iter_result(vec![Ok(2), Err("fail"), Ok(4)]);
+        let stream_c = stream::iter_result(vec![Ok(5)]);
 
         let status = select_all(vec![stream_a, stream_b, stream_c])
             .collect()

@@ -1,12 +1,12 @@
 [package]
-name = "futures-stream-select-all"
+name = "futures-stream-select-all-send"
 version = "0.1.2"
 description = "A futures library adapter for merging the output of several streams"
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/swizard0/futures-stream-select-all"
-homepage = "https://github.com/swizard0/futures-stream-select-all"
-authors = ["Alexey Voznyuk <me@swizard.info>"]
+repository = "https://github.com/vpzomtrrfrt/futures-stream-select-all-send"
+homepage = "https://github.com/vpzomtrrfrt/futures-stream-select-all-send"
+authors = ["Alexey Voznyuk <me@swizard.info>", "Colin Reeder <vpzomtrrfrt@gmail.com>"]
 keywords = ["futures", "async", "future", "stream", "merge"]
 categories = ["asynchronous"]
 
